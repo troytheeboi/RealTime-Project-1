@@ -3,6 +3,8 @@
 #include<string.h>
 #include<errno.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/shm.h>
 
 
 int CUSTOMER_ARRIVAL_RATE_LOWER;
@@ -20,6 +22,19 @@ int CUSTOMER_WAITING_INLINE_TIME;
 int CUSTOMER_LEFT_THRESHOLD;
 int CASHIER_LEFT_THRESHOLD;
 int INCOME_THRESHOLD;
+
+
+struct{
+    int itemPrice;
+    char itemName[100]; 
+    int quantity;
+}Item;
+
+struct Item * Item_arr;
+
+int itemCount;
+
+
 
 void readConfigFile(const char *filename) {
     FILE *file = fopen(filename, "r");
@@ -101,3 +116,105 @@ void readConfigFile(const char *filename) {
 
     fclose(file);
 }
+
+void readItemsIntoShm(const char * filename){
+
+    key_t key = ftok("item.txt", 'R');
+    int shmid;
+
+    int numOfItems = countNonEmptyLines(filename);
+
+    
+    // Calculate the size of the shared memory
+    size_t shm_size = sizeof(Item) * numOfItems;
+
+    // Create a shared memory segment
+    if ((shmid = shmget(key, shm_size, IPC_CREAT | 0666)) < 0) {
+        perror("shmget");
+        exit(1);
+    }
+
+    // Attach the shared memory segment to the process's address space
+    Item_arr = (struct Item *)shmat(shmid, NULL, 0);
+
+    
+    if (Item_arr == (struct Item*)-1) {
+        perror("shmat");
+        exit(1);
+    }
+
+    
+
+    FILE *file = fopen(filename, "r");
+
+    if (file == NULL) {
+        perror("Error opening file");
+    }
+
+      // Assuming a maximum of 20 items, you can adjust as needed
+    itemCount = 0;
+
+    char line[256];  // Assuming a maximum line length of 100, you can adjust as needed
+
+    while (fgets(line, sizeof(line), file) != NULL) {
+        // Using sscanf to parse the line into the struct members
+        char* token = strtok(line,",");
+
+        if (token == NULL) {
+            // Check for the end of file
+            break;
+        }
+
+
+        strcpy(Item_arr[itemCount].itemName,token);
+
+        token = strtok(NULL,",");
+
+         if (token == NULL) {
+            // Check for the end of file
+            break;
+        }
+
+        Item_arr[itemCount].quantity = atoi(token);
+
+        token = strtok(NULL,",");
+
+         if (token == NULL) {
+            // Check for the end of file
+            break;
+        }
+        
+        Item_arr[itemCount].itemPrice = atoi(token);
+        
+        itemCount++;
+     
+    }
+
+    // Close the file
+    fclose(file);
+
+  
+}
+
+int countNonEmptyLines(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        return -1; // Return -1 to indicate an error
+    }
+
+    int count = 0;
+    char line[1000]; // Adjust the size based on your needs
+
+    while (fgets(line, sizeof(line), file) != NULL) {
+        // Check if the line is not empty
+        if (line[0] != '\n' && line[0] != '\0') {
+            count++;
+        }
+    }
+
+    fclose(file);
+
+    return count;
+}
+

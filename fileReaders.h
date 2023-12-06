@@ -17,6 +17,19 @@ extern int CUSTOMER_LEFT_THRESHOLD;
 extern int CASHIER_LEFT_THRESHOLD;
 extern int INCOME_THRESHOLD;
 
+extern struct Item{
+    int itemPrice;
+    char itemName[100]; 
+    int quantity;
+}item;
+
+extern struct Item * Item_arr;
+
+extern int itemCount;
+
+
 void readConfigFile(const char *filename);
+void readItemsIntoShm(const char *filename);
+int countNonEmptyLines(const char *filename);
 
 #endif
