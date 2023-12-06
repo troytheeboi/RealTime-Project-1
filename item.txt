@@ -1,0 +1,20 @@
+Eggs, 1000, 20
+Milk, 500, 15
+Bread, 200, 10
+Cheese, 300, 25
+Cereal, 150, 12
+Apples, 100, 8
+Chicken, 50, 30
+Rice, 400, 18
+Tomatoes, 300, 5
+Orange, 200, 15
+Pasta, 250, 2
+Yogurt, 150, 3.5
+Potatoes, 300, 1.5
+Salmon, 50, 12
+Bananas, 200, 0.5
+Coffee, 100, 8
+Toilet Paper, 30, 5
+Shampoo, 40, 6
+Spinach, 75, 3
+Beef, 120, 7
