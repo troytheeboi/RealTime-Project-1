@@ -9,10 +9,10 @@ Rice, 400, 18
 Tomatoes, 300, 5
 Orange, 200, 15
 Pasta, 250, 2
-Yogurt, 150, 3.5
-Potatoes, 300, 1.5
+Yogurt, 150, 4
+Potatoes, 300, 2
 Salmon, 50, 12
-Bananas, 200, 0.5
+Bananas, 200, 1
 Coffee, 100, 8
 Toilet Paper, 30, 5
 Shampoo, 40, 6

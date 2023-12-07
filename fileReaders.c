@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/shm.h>
+#include <GL/freeglut.h>
+#include"cashierSm_Sem.h"
 
 
 int CUSTOMER_ARRIVAL_RATE_LOWER;
@@ -23,6 +25,7 @@ int CUSTOMER_LEFT_THRESHOLD;
 int CASHIER_LEFT_THRESHOLD;
 int INCOME_THRESHOLD;
 
+int itemsSemaphore;
 
 struct{
     int itemPrice;
@@ -37,6 +40,7 @@ int itemCount;
 
 
 void readConfigFile(const char *filename) {
+
     FILE *file = fopen(filename, "r");
 
     if (file == NULL) {
@@ -72,11 +76,6 @@ void readConfigFile(const char *filename) {
         int value;
 
         value = atoi(valString);
-
-        
-       
-    
-    
 
         // Assign the value to the corresponding global variable
         if (strcmp(variableName, "CUSTOMER_ARRIVAL_RATE_LOWER") == 0) {
@@ -142,7 +141,6 @@ void readItemsIntoShm(const char * filename){
         perror("shmat");
         exit(1);
     }
-
     
 
     FILE *file = fopen(filename, "r");
@@ -151,7 +149,7 @@ void readItemsIntoShm(const char * filename){
         perror("Error opening file");
     }
 
-      // Assuming a maximum of 20 items, you can adjust as needed
+    // Assuming a maximum of 20 items, you can adjust as needed
     itemCount = 0;
 
     char line[256];  // Assuming a maximum line length of 100, you can adjust as needed
@@ -192,6 +190,8 @@ void readItemsIntoShm(const char * filename){
 
     // Close the file
     fclose(file);
+
+    itemsSemaphore = initSemaphores('i');
 
   
 }

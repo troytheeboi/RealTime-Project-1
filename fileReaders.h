@@ -26,7 +26,7 @@ extern struct Item{
 extern struct Item * Item_arr;
 
 extern int itemCount;
-
+extern int itemsSemaphore;
 
 void readConfigFile(const char *filename);
 void readItemsIntoShm(const char *filename);

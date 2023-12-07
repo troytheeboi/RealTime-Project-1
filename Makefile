@@ -1,10 +1,10 @@
 # Makefile for your_program_name
 
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -std=c99 -lrt -g
+CFLAGS =  -Wall -lGL -lGLU -lglut -lGLEW -lglfw -lX11 -lXxf86vm -lXrandr -lpthread -lXi -ldl -lXinerama -lXcursor -lm -g
 
 # List of source files
-SRCS = main.c fileReaders.c
+SRCS = main.c fileReaders.c openGLfunctions.c cashierSm_Sem.c 
 
 # List of object files
 OBJS = $(SRCS:.c=.o)
@@ -15,10 +15,10 @@ TARGET = exec
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) -o $@ $^ $(CFLAGS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) -c $< -o $@ $(CFLAGS) 
 
 clean:
 	rm -f $(OBJS) $(TARGET)
