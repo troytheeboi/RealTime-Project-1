@@ -74,7 +74,7 @@ int initSemaphores(char unique) {
         exit(1);
     }
 
-    printf("Semaphore created with id %d\n",semid);
+    // printf("Semaphore created with id %d\n",semid);
 
 
 

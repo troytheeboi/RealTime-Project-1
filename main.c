@@ -15,7 +15,9 @@
 #include <time.h>
 #include <unistd.h>
 
-int mainparent;
+int mainparent; //main parent process id
+pid_t allChildrent[100]; //all children process ids will be used for terminating them //TODO: terminate all
+
 
 int main(int argc, char **argv) {
 
@@ -28,6 +30,9 @@ int main(int argc, char **argv) {
     readItemsIntoShm(itemfile); //from fileReaders.h and
 
     makeCahierShm_Sem(); //from cashierSm_Sem.h
+
+    //TODO: make shared mem and semaphore for customers that have left to be used in termination
+    //TODO: make shared mem and semaphore for cashiers that have left to be used in termination
 
     int pid;
 
@@ -54,19 +59,48 @@ int main(int argc, char **argv) {
         if (pid == 0 && hasEntered != 1){
 
             hasEntered = 1;
+            int cashierParent = getpid();
 
-            Cashier_arr[order].cashierId = getid();
+            Cashier_arr[order].cashierId = getpid();
             Cashier_arr[order].cashierQueueSize = 0;
             Cashier_arr[order].timePerItem = 0;
             Cashier_arr[order].behavior = INITIAL_CASHIER_BEHAVIOR;
             Cashier_arr[order].totalItemsInQueue = 0;
 
-            strcpy(Cashier_arr[order].fifoName, "fifo");
+            char fifoName[20] ;
+
+            sprintf(fifoName, "%d", getpid());
+
+            strcpy(Cashier_arr[order].fifoName, fifoName);
+
+            int pid2 = fork();
+
+            if (pid2 == -1) {
+                printf("fork failure ... getting out\n");
+                perror("fork");
+            }
+
+            if(pid2 == 0){
+                //TODO: cashier watcher process 
+                printf("I am the watcher  => PID = %d and i = %d and my parent is %d \n ", getpid(),order,getppid());
+
+            }
+
+            if(getpid()==cashierParent){
 
 
-            // printf("I am the child  => PID = %d and i = %d and my parent is %d \n ", getpid(),order,getppid());
-           
-            //TODO: cashier process
+                printf("I am the child  => PID = %d and i = %d and my parent is %d \n ", getpid(),order,getppid());
+
+                //TODO: remove after test
+                // wait(NULL);
+            
+                //TODO: cashier process
+
+            }
+
+            
+
+
 
         }
   }
