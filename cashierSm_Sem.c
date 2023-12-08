@@ -19,6 +19,7 @@ struct{
     int timePerItem;
     int behavior;
     int totalItemsInQueue;
+    int cashierAvailable;
 }Cashier;
 
 struct Cashier * Cashier_arr;
@@ -35,7 +36,7 @@ void makeCahierShm_Sem(){
 
     int shmid;
 
-    key_t key = ftok("arguments.txt", 65); // Generate a key for shared memory
+    key_t key = ftok("arguments.txt", 'D'); // Generate a key for shared memory
 
     size_t shm_size = sizeof(Cashier) * NUM_CASHIERS; // Calculate the size of the shared memory
 
@@ -98,3 +99,4 @@ void sem_signal(int sem_id) {
         exit(1);
     }
 }
+

@@ -12,6 +12,7 @@ extern struct Cashier {
     int timePerItem;
     int behavior;
     int totalItemsInQueue;
+    int cashierAvailable;
 }cashier;
 
 extern struct Cashier * Cashier_arr;

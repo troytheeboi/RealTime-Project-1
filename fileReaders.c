@@ -129,7 +129,7 @@ void readItemsIntoShm(const char * filename){
 
     // Create a shared memory segment
     if ((shmid = shmget(key, shm_size, IPC_CREAT | 0666)) < 0) {
-        perror("shmget");
+        perror(filename);
         exit(1);
     }
 

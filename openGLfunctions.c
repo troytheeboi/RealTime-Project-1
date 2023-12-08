@@ -3,7 +3,7 @@
 #include<math.h>
 #include "fileReaders.h"
 #include<stdio.h>
-
+#include "openGLfunctions.h"
 
 int windowWidth = 800;
 int windowHeight = 600;
