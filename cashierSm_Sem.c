@@ -15,7 +15,7 @@ int cashiersSemaphore;
 struct{
     int cashierId;
     int cashierQueueSize;
-    char fifoName[50];
+    long messageType;
     int timePerItem;
     int behavior;
     int totalItemsInQueue;
@@ -60,7 +60,7 @@ void makeCahierShm_Sem(){
 
 int initSemaphores(char unique) {
     
-    key_t key = ftok(".", unique); // Generate a key for semaphores
+    key_t key = ftok("forkeys.txt", unique); // Generate a key for semaphores
     int semid = semget(key, 1, 0666 | IPC_CREAT);
     if (semid == -1) {
         perror("semget");

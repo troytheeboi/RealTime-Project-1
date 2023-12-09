@@ -4,7 +4,7 @@ CC = gcc
 CFLAGS =  -Wall -lGL -lGLU -lglut -lGLEW -lglfw -lX11 -lXxf86vm -lXrandr -lpthread -lXi -ldl -lXinerama -lXcursor -lm -g
 
 # List of source files
-SRCS = main.c fileReaders.c openGLfunctions.c cashierSm_Sem.c cashierProc.c randomNumGen.c
+SRCS = main.c fileReaders.c openGLfunctions.c cashierSm_Sem.c cashierProc.c randomNumGen.c customer.c 
 
 # List of object files
 OBJS = $(SRCS:.c=.o)

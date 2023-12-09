@@ -8,7 +8,7 @@ extern int cashiersSemaphore;
 extern struct Cashier {
     int cashierId;
     int cashierQueueSize;
-    char fifoName[50];
+    long messsageType;
     int timePerItem;
     int behavior;
     int totalItemsInQueue;
