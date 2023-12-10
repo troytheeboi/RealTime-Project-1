@@ -18,7 +18,7 @@ extern struct Cashier {
 extern struct Cashier * Cashier_arr;
 
 int initSemaphores(char unique);
-void makeCahierShm_Sem(void);
+int makeCahierShm_Sem(void);
 void sem_wait(int sem_id);
 void sem_signal(int sem_id);
 

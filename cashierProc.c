@@ -21,7 +21,9 @@ void CashierProcess(int TperItem, int qid , long normMessage, long leaveMessage,
 
 
     int totalIncome = 0;
+
     printf("cashier normal type %ld \n",normMessage);
+    printf("cashier leave type %ld \n",leaveMessage);
 
     while(1){
 
@@ -37,6 +39,7 @@ void CashierProcess(int TperItem, int qid , long normMessage, long leaveMessage,
         if((toLeave = msgrcv(qid, &notifier, notifierLenghth, leaveMessage, IPC_NOWAIT)) != -1){ // if the cashier recieves a leave message (which is type leave message) clean up resources and leave 
            
             //cleanup and ask all customers to leave queue by sending a message in queue NUM_CASHIER*2 after waking them up first
+            printf("cashier leaving \n");
 
             while (( result = msgrcv(qid, &customer, messageLenghth, normMessage, IPC_NOWAIT)) != -1)
             {
@@ -52,7 +55,7 @@ void CashierProcess(int TperItem, int qid , long normMessage, long leaveMessage,
         }
 
         if(( result = msgrcv(qid, &customer, messageLenghth, normMessage, IPC_NOWAIT)) != -1){ // recieve a customer from the queue  with normal type means it was sent from actual customer
-            printf("cashier recieved customer %d \n",customer.customer_id);
+            printf("cashier recieved customer %d \n" , customer.customer_id);
 
             if(is_process_alive(customer.customer_id)){ //checks if customer process whose info is in customer struct is still alive
             
@@ -69,9 +72,12 @@ void CashierProcess(int TperItem, int qid , long normMessage, long leaveMessage,
                     //TODO: do this more gracefully maybe signal to main parent to clean up shm and semaphores and queue
                 }
 
+                printf("cashiers semaphore in process %d \n", cahierSem);
+
                 sem_wait(cahierSem); //wait for semaphore to be available
 
                 Cashier_arr[order].totalItemsInQueue -= customer.numOfItems; //decrease total items in queue
+                printf("total items in queue %d \n", Cashier_arr[order].totalItemsInQueue);
                 Cashier_arr[order].cashierQueueSize--; //decrease queue size
 
                 sem_signal(cahierSem); //signal semaphore is available

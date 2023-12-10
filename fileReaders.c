@@ -116,7 +116,7 @@ void readConfigFile(const char *filename) {
     fclose(file);
 }
 
-void readItemsIntoShm(const char * filename){
+int readItemsIntoShm(const char * filename){
 
     key_t key = ftok("item.txt", 'R');
     int shmid;
@@ -134,7 +134,7 @@ void readItemsIntoShm(const char * filename){
     }
 
     // Attach the shared memory segment to the process's address space
-    Item_arr = (struct Item *)shmat(shmid, NULL, 0);
+    Item_arr = (struct Item *)shmat(shmid, 0, 0);
 
     
     if (Item_arr == (struct Item*)-1) {
@@ -192,6 +192,8 @@ void readItemsIntoShm(const char * filename){
     fclose(file);
 
     itemsSemaphore = initSemaphores('i');
+
+    return shmid;
 
   
 }

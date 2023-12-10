@@ -32,7 +32,7 @@ union semun {
 };
 
 
-void makeCahierShm_Sem(){
+int makeCahierShm_Sem(){
 
     int shmid;
 
@@ -45,7 +45,7 @@ void makeCahierShm_Sem(){
         exit(1);
     }
 
-    Cashier_arr = (struct Cashier *) shmat(shmid, NULL, 0); // Attach the shared memory segment
+    Cashier_arr = (struct Cashier *) shmat(shmid, 0, 0); // Attach the shared memory segment
 
     if (Cashier_arr == (struct Cashier *)-1) {
         perror("shmat");
@@ -55,6 +55,9 @@ void makeCahierShm_Sem(){
 
 
     cashiersSemaphore = initSemaphores('c');
+    printf("Cashiers semaphore created with id in init %d\n",cashiersSemaphore);
+
+    return shmid;
 
 }
 
@@ -87,7 +90,6 @@ void sem_wait(int sem_id) {
     struct sembuf wait_buf = {0, -1, SEM_UNDO};
     if (semop(sem_id, &wait_buf, 1) < 0) {
         perror("sem_wait");
-        exit(1);
     }
 }
 
@@ -96,7 +98,6 @@ void sem_signal(int sem_id) {
     struct sembuf signal_buf = {0, 1, SEM_UNDO};
     if (semop(sem_id, &signal_buf, 1) < 0) {
         perror("sem_signal");
-        exit(1);
     }
 }
 

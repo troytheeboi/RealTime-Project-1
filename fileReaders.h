@@ -29,7 +29,7 @@ extern int itemCount;
 extern int itemsSemaphore;
 
 void readConfigFile(const char *filename);
-void readItemsIntoShm(const char *filename);
+int readItemsIntoShm(const char *filename);
 int countNonEmptyLines(const char *filename);
 
 #endif

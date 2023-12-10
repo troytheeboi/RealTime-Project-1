@@ -19,9 +19,9 @@
 #include <sys/stat.h>
 #include "cashierProc.h"
 #include <sys/msg.h>
+#include "cashierSm_Sem.h"
 
 int mainparent; //main parent process id
-//TODO: terminate all
 
 
 int main(int argc, char **argv) {
@@ -32,17 +32,43 @@ int main(int argc, char **argv) {
     char *itemfile = "item.txt"; 
 
     readConfigFile(argFile); //from fileReaders.h
-    readItemsIntoShm(itemfile); //from fileReaders.h and
+    int itemShmid = readItemsIntoShm(itemfile); //from fileReaders.h and
 
-    makeCahierShm_Sem(); //from cashierSm_Sem.h
+    int cashierShmid = makeCahierShm_Sem(); //from cashierSm_Sem.h
 
     //TODO: make shared mem and semaphore for customers that have left to be used in termination (passed to customers)
+
     //TODO: make shared mem and semaphore for cashiers that have left to be used in termination (passed to watchers)
+
+    key_t cashierCountKey = ftok(".", 'o'); // Generate a key for cashiers left int shm
+    int cashierCountShmid;
+    
+    if((cashierCountShmid = shmget(cashierCountKey, sizeof(int), IPC_CREAT | 0666))<0){ // Create a shared memory segment for cashiers left int shm
+        perror("shmget");
+        exit(1);
+    } 
+
+    int *cashiersLeft = (int *)shmat(cashierCountShmid, 0, 0); //attach to main process memory space
+
+    printf("shm is  %p\n",cashiersLeft);
+
+    if (cashiersLeft == (int*)-1) {
+        perror("shmat");
+        exit(1);
+    }
+
+    int cashiersLeftSem = initSemaphores('l'); //init semaphore for cashiers left int shm
+
+    sem_wait(cashiersLeftSem); //wait for semaphore to be available
+    *cashiersLeft = 0; //set initial value of cashiers left to 0
+    sem_signal(cashiersLeftSem); //release semaphore
+
+
 
 
     key_t key = ftok(".", 'q'); // Generate a key for queue
     int qid = msgget(key, IPC_CREAT | 0666); // Create a queue and get the queue id
-
+    printf("this is qid %d\n",qid);
     if(qid == -1){
         perror("msgget");
         exit(1);
@@ -75,18 +101,22 @@ int main(int argc, char **argv) {
     
         if (pid == 0 && hasEntered != 1){
 
+            printf("heheh %d \n",getpid());
+
             hasEntered = 1;
             int cashierParent = getpid();
             int scanTime = getRandomNumber(SCAN_TIME_PER_ITEM_LOWER, SCAN_TIME_PER_ITEM_UPPER);
+            
+            struct Cashier* Cashier_arr2 = (struct Cashier *) shmat(cashierShmid, 0, 0); // Attach the shared memory segment to cashier process's address space
 
-            Cashier_arr[order].cashierId = getpid();
-            Cashier_arr[order].cashierQueueSize = 0;
-            Cashier_arr[order].timePerItem = scanTime;
-            Cashier_arr[order].behavior = INITIAL_CASHIER_BEHAVIOR;
-            Cashier_arr[order].totalItemsInQueue = 0;
-            Cashier_arr[order].cashierAvailable = 1;
+            Cashier_arr2[order].cashierId = getpid();
+            Cashier_arr2[order].cashierQueueSize = 0;
+            Cashier_arr2[order].timePerItem = scanTime;
+            Cashier_arr2[order].behavior = INITIAL_CASHIER_BEHAVIOR;
+            Cashier_arr2[order].totalItemsInQueue = 0;
+            Cashier_arr2[order].cashierAvailable = 1;
            
-            Cashier_arr[order].messsageType = cashierType;
+            Cashier_arr2[order].messsageType = cashierType;
 
 
             int pid2 = fork();
@@ -98,7 +128,8 @@ int main(int argc, char **argv) {
 
             if(pid2 == 0){
                 //TODO: cashier watcher process pass cashier leave type
-                printf("I am the watcher  => PID = %d and i = %d and my parent is %d \n ", getpid(),order,getppid());
+                int* shmCashiersL = (int *) shmat(cashierCountShmid, 0, 0);
+                printf("I am the watcher  => PID = %d and i = %d and my parent is %d shmid %p\n ", getpid(),order,getppid(),shmCashiersL);
 
             }
 
@@ -107,7 +138,7 @@ int main(int argc, char **argv) {
 
                 printf("I am the child  => PID = %d and i = %d and my parent is %d \n ", getpid(),order,getppid());
     
-                CashierProcess(scanTime,qid,cashierType,leaveType,Cashier_arr,cashiersSemaphore,order); //from cashierProc.h
+                CashierProcess(scanTime,qid,cashierType,leaveType,Cashier_arr2,cashiersSemaphore,order); //from cashierProc.h
 
             }
 
