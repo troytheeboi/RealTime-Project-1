@@ -104,7 +104,9 @@ int main(int argc, char **argv) {
 
             hasEntered = 1;
             int cashierParent = getpid();
+            srand(time(NULL) ^ (getpid()<<16)); //seed random number generator with pid
             int scanTime = getRandomNumber(SCAN_TIME_PER_ITEM_LOWER, SCAN_TIME_PER_ITEM_UPPER);
+            printf("scan time %d \n", scanTime);
             
             struct Cashier* Cashier_arr2 = (struct Cashier *) shmat(cashierShmid, 0, 0); // Attach the shared memory segment to cashier process's address space
 

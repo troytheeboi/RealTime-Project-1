@@ -18,8 +18,10 @@ int SCAN_TIME_PER_ITEM_LOWER;
 int SCAN_TIME_PER_ITEM_UPPER;
 int NUM_CASHIERS;
 int INITIAL_CASHIER_BEHAVIOR;
-int CASHIER_BEHAVIOUR_INTERVAL;
-int CASHIER_BEHAVIOR_DECREMENT;
+int CASHIER_BEHAVIOUR_INTERVAL_LOWER;
+int CASHIER_BEHAVIOUR_INTERVAL_UPPER;
+int CASHIER_BEHAVIOR_DECREMENT_LOWER;
+int CASHIER_BEHAVIOR_DECREMENT_UPPER;
 int CUSTOMER_WAITING_INLINE_TIME;
 int CUSTOMER_LEFT_THRESHOLD;
 int CASHIER_LEFT_THRESHOLD;
@@ -96,16 +98,18 @@ void readConfigFile(const char *filename) {
             NUM_CASHIERS = value;
         }else if (strcmp(variableName, "INITIAL_CASHIER_BEHAVIOR") == 0){
             INITIAL_CASHIER_BEHAVIOR = value;
-        }else if (strcmp(variableName, "CASHIER_BEHAVIOUR_INTERVAL") == 0){
-            CASHIER_BEHAVIOUR_INTERVAL = value;
-        }else if (strcmp(variableName, "CASHIER_BEHAVIOR_DECREMENT") == 0){
-            CASHIER_BEHAVIOR_DECREMENT = value;
+        }else if (strcmp(variableName, "CASHIER_BEHAVIOUR_INTERVAL_LOWER") == 0){
+            CASHIER_BEHAVIOUR_INTERVAL_LOWER = value;
+        }else if (strcmp(variableName, "CASHIER_BEHAVIOUR_INTERVAL_UPPER") == 0){
+            CASHIER_BEHAVIOUR_INTERVAL_UPPER = value;
         }else if (strcmp(variableName, "CUSTOMER_WAITING_INLINE_TIME") == 0){
             CUSTOMER_WAITING_INLINE_TIME = value;
         }else if (strcmp(variableName, "CUSTOMER_LEFT_THRESHOLD") == 0){
             CUSTOMER_LEFT_THRESHOLD = value;
-        } else if (strcmp(variableName, "CASHIER_LEFT_THRESHOLD") == 0){
-            CASHIER_LEFT_THRESHOLD = value;
+        }else if (strcmp(variableName, "CASHIER_BEHAVIOR_DECREMENT_LOWER") == 0){
+            CASHIER_BEHAVIOR_DECREMENT_LOWER = value;
+        }else if (strcmp(variableName, "CASHIER_BEHAVIOR_DECREMENT_UPPER") == 0){
+            CASHIER_BEHAVIOR_DECREMENT_UPPER = value;
         }else {
             INCOME_THRESHOLD = value;
         }
