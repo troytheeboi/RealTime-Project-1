@@ -29,7 +29,7 @@ int itemsSemaphore;
 
 struct{
     int itemPrice;
-    char itemName[100]; 
+    char itemName[50]; 
     int quantity;
 }Item;
 

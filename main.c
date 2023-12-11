@@ -20,6 +20,7 @@
 #include "cashierProc.h"
 #include <sys/msg.h>
 #include "cashierSm_Sem.h"
+#include "watcher.h"
 
 int mainparent; //main parent process id
 
@@ -101,8 +102,6 @@ int main(int argc, char **argv) {
     
         if (pid == 0 && hasEntered != 1){
 
-            printf("heheh %d \n",getpid());
-
             hasEntered = 1;
             int cashierParent = getpid();
             int scanTime = getRandomNumber(SCAN_TIME_PER_ITEM_LOWER, SCAN_TIME_PER_ITEM_UPPER);
@@ -127,8 +126,12 @@ int main(int argc, char **argv) {
             }
 
             if(pid2 == 0){
-                //TODO: cashier watcher process pass cashier leave type
+                
                 int* shmCashiersL = (int *) shmat(cashierCountShmid, 0, 0);
+                struct Cashier* Cashier_arr3 = (struct Cashier *) shmat(cashierShmid, 0, 0);
+    
+                watcherProcess(qid, Cashier_arr3,cashiersSemaphore,order,leaveType,shmCashiersL,cashiersLeftSem);
+
                 printf("I am the watcher  => PID = %d and i = %d and my parent is %d shmid %p\n ", getpid(),order,getppid(),shmCashiersL);
 
             }

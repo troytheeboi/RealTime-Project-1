@@ -82,8 +82,6 @@ void CashierProcess(int TperItem, int qid , long normMessage, long leaveMessage,
 
                 sem_signal(cahierSem); //signal semaphore is available
 
-
-                
             }else{
                 
                 sem_wait(cahierSem); //wait for semaphore to be available
@@ -93,12 +91,7 @@ void CashierProcess(int TperItem, int qid , long normMessage, long leaveMessage,
 
                 sem_signal(cahierSem); //signal semaphore is available
             }
-
         }
-
-        
-
-        
     }
         
 }

@@ -21,10 +21,10 @@ void drawItems() {
 
     // Draw items and their prices in the same row with a bold-like effect
     for (int i = 0; i < itemCount; ++i) {
-        char itemString[50]; // Assuming a reasonable length for the item string
+        char itemString[60]; // Assuming a reasonable length for the item string
 
         // Format the item and price string
-        sprintf(itemString, "%s: %d", Item_arr[i].itemName, Item_arr[i].itemPrice);
+        sprintf(itemString, "%s : %d", Item_arr[i].itemName, Item_arr[i].itemPrice);
 
         // Scale the text to achieve a larger font size
         glPushMatrix();

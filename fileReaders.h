@@ -19,7 +19,7 @@ extern int INCOME_THRESHOLD;
 
 extern struct Item{
     int itemPrice;
-    char itemName[100]; 
+    char itemName[50]; 
     int quantity;
 }item;
 
