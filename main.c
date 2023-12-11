@@ -21,6 +21,7 @@
 #include <sys/msg.h>
 #include "cashierSm_Sem.h"
 #include "watcher.h"
+#include "arrivals.h"
 
 int mainparent; //main parent process id
 
@@ -37,9 +38,32 @@ int main(int argc, char **argv) {
 
     int cashierShmid = makeCahierShm_Sem(); //from cashierSm_Sem.h
 
-    //TODO: make shared mem and semaphore for customers that have left to be used in termination (passed to customers)
+   
 
-    //TODO: make shared mem and semaphore for cashiers that have left to be used in termination (passed to watchers)
+    key_t CustomerCountKey = ftok(".", 'z'); // Generate a key for cashiers left int shm
+    int customerCountShmid;
+    
+    if((customerCountShmid = shmget(CustomerCountKey, sizeof(int), IPC_CREAT | 0666))<0){ // Create a shared memory segment for cashiers left int shm
+        perror("shmget");
+        exit(1);
+    } 
+
+    int *customersLeft = (int *)shmat(customerCountShmid, 0, 0); //attach to main process memory space
+
+    printf("shm customer  is  %p\n",customersLeft);
+
+    if (customersLeft == (int*)-1) {
+        perror("shmat");
+        exit(1);
+    }
+
+    int customersLeftSem = initSemaphores('n'); //init semaphore for cashiers left int shm
+
+    sem_wait(customersLeftSem); //wait for semaphore to be available
+    *customersLeft = 0; //set initial value of cashiers left to 0
+    sem_signal(customersLeftSem); //release semaphore
+
+    
 
     key_t cashierCountKey = ftok(".", 'o'); // Generate a key for cashiers left int shm
     int cashierCountShmid;
@@ -147,23 +171,41 @@ int main(int argc, char **argv) {
 
             }
 
-            
         }
   }
 
     if(getpid()==mainparent){
-    
-        glutInit(&argc, argv);
-        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-        glutInitWindowSize(windowWidth, windowHeight);
-        glutCreateWindow("Cash Registers");
+        
+        int forkArrivals = fork();
 
-        glutDisplayFunc(display);
-        glutReshapeFunc(reshape);
+        if (forkArrivals == -1) {
+            printf("fork failure... getting out\n");
+            perror("fork");
+        }
 
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set clear color to black
+        if(forkArrivals == 0){
+          
+            //TODO: arrival process
+            arrivalProcess(qid,itemShmid,itemsSemaphore,cashierShmid,cashiersSemaphore,customerCountShmid,customersLeftSem);
+            
 
-        glutMainLoop();
+        }else{
+
+            glutInit(&argc, argv);
+            glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
+            glutInitWindowSize(windowWidth, windowHeight);
+            glutCreateWindow("Cash Registers");
+
+            glutDisplayFunc(display);
+            glutReshapeFunc(reshape);
+
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set clear color to black
+
+            glutMainLoop();
+
+        }
+
+        
 
     }
 

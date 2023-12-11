@@ -15,7 +15,9 @@
 void watcherProcess(int qid,struct Cashier* Cashier_arr, int cashierSem, int order, long leave, int* haveAlreadyLeft, int cashierLeftSem){
 
     int start = INITIAL_CASHIER_BEHAVIOR;
+
     srand(time(NULL) ^ (getpid()<<16)); //seed random number generator with pid
+
     int interval = getRandomNumber(CASHIER_BEHAVIOUR_INTERVAL_LOWER, CASHIER_BEHAVIOUR_INTERVAL_UPPER);
     int decrement = getRandomNumber(CASHIER_BEHAVIOR_DECREMENT_LOWER, CASHIER_BEHAVIOR_DECREMENT_UPPER);
 
@@ -60,7 +62,5 @@ void watcherProcess(int qid,struct Cashier* Cashier_arr, int cashierSem, int ord
     sem_signal(cashierLeftSem);
 
     raise(SIGKILL);
-
-
 
 }

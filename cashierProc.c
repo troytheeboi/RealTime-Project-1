@@ -43,7 +43,6 @@ void CashierProcess(int TperItem, int qid , long normMessage, long leaveMessage,
 
             while (( result = msgrcv(qid, &customer, messageLenghth, normMessage, IPC_NOWAIT)) != -1)
             {
-               
                notifier.mtype = customer.mtype; 
                strcpy(notifier.mtext, "customer another queue");
                msgsnd(qid, &notifier, notifierLenghth, 0);
