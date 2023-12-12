@@ -19,7 +19,6 @@
 #include <sys/stat.h>
 #include "cashierProc.h"
 #include <sys/msg.h>
-#include "cashierSm_Sem.h"
 #include "watcher.h"
 #include "arrivals.h"
 

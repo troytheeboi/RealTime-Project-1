@@ -70,7 +70,7 @@ void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers,
 
         if (quantity > 0)
         {
-            int willGet = getRandomNumber(1, quantity); // how many items will get from each type no less than 1 no more than total quantity
+            int willGet = getRandomNumber(1, (quantity/10)); // how many items will get from each type no less than 1 no more than total quantity
 
             items[index].quantity -= willGet;          // decrease quantity
             numItems += willGet;                       // num of items in customer cart will be increased

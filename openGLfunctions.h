@@ -11,8 +11,7 @@ extern int circleRadius;
 
 void drawItems(void);
 void drawWhiteRectangle(void);
-void drawTriangle(int x);
-void drawCircle(int x,int y, int radius, int segments);
+void drawCashier(int cashier,int index,int queueSize, int itemsCount);
 void display(void);
 void reshape(int w, int h);
 
