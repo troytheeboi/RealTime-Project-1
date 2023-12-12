@@ -183,8 +183,6 @@ int main(int argc, char **argv)
 
         if (forkArrivals == 0)
         {
-
-            // TODO: arrival process
             arrivalProcess(qid, itemShmid, itemsSemaphore, cashierShmid, cashiersSemaphore, customerCountShmid, customersLeftSem);
         }
         else

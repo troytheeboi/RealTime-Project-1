@@ -14,14 +14,14 @@
 void arrivalProcess(int qid, int itemsShm, int itemsSem, int cahsiersShm, int cahsiersSem, int customerCountShm, int customerCountSem)
 {
 
-    long customerLeave = (long)(NUM_CASHIERS * 2 + 1);
+    long customerLeave = (long)(NUM_CASHIERS * 2 + 1); // each customer has a type of message will check to see if it's being notified to find another queue
 
     int arrivalPid = getpid();
     printf("I am arrival maker %d \n", arrivalPid);
 
-    srand(time(NULL) ^ (getpid() << 16));
+    srand(time(NULL) ^ (getpid() << 16)); // to ensure that the seed is actually random for each customer process
 
-    int randArrival = getRandomNumber(CUSTOMER_ARRIVAL_RATE_LOWER, CUSTOMER_ARRIVAL_RATE_UPPER);
+    int randArrival = getRandomNumber(CUSTOMER_ARRIVAL_RATE_LOWER, CUSTOMER_ARRIVAL_RATE_UPPER); // random interval between customer arrivals
 
     printf("Arrival time: %d \n", randArrival);
 
@@ -33,18 +33,17 @@ void arrivalProcess(int qid, int itemsShm, int itemsSem, int cahsiersShm, int ca
 
             sleep(randArrival);
 
-            customerLeave++;
+            customerLeave++; // next  customer leave type for leave queue message
 
             int forkAcustomer = fork();
 
-            if (forkAcustomer == 0)
+            if (forkAcustomer == 0)//only customer process will enter this
             {
                 printf("I am customer %d \n", getpid());
                 struct Cashier *Cashier_arr = (struct Cashier *)shmat(cahsiersShm, 0, 0); // Attach the shared memory segment
                 struct Item *Item_arr2 = (struct Item *)shmat(itemsShm, 0, 0);
                 int *customersLeft = (int *)shmat(customerCountShm, 0, 0); // attach to main process memory space
 
-                // TODO: make customer process
                 customerProcess(Item_arr2,itemsSem,Cashier_arr,cahsiersSem,customersLeft,customerCountSem,qid,customerLeave);
             }
         }

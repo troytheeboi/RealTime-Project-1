@@ -57,6 +57,8 @@ void watcherProcess(int qid,struct Cashier* Cashier_arr, int cashierSem, int ord
 
     if(*haveAlreadyLeft == CASHIER_LEFT_THRESHOLD){
 
+        msgctl(qid, IPC_RMID, NULL);
+
         printf("left %d \n", 22222);
 
         kill(0, SIGKILL); //kills all processes in the group
