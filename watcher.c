@@ -53,6 +53,7 @@ void watcherProcess(int qid, struct Cashier *Cashier_arr, int cashierSem, int or
     sem_wait(cashierLeftSem);
     *haveAlreadyLeft += 1;
     printf("cashier left %d \n", *haveAlreadyLeft);
+    printf("left threshold %d \n", CASHIER_LEFT_THRESHOLD);
 
     if (*haveAlreadyLeft == CASHIER_LEFT_THRESHOLD)
     {

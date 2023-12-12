@@ -143,6 +143,10 @@ void readConfigFile(const char *filename)
         {
             CASHIER_BEHAVIOR_DECREMENT_UPPER = value;
         }
+        else if (strcmp(variableName, "CASHIER_LEFT_THRESHOLD") == 0)
+        {
+            CASHIER_LEFT_THRESHOLD = value;
+        }
         else
         {
             INCOME_THRESHOLD = value;
