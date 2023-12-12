@@ -43,10 +43,10 @@ void CashierProcess(int TperItem, int qid , long normMessage, long leaveMessage,
 
             while (( result = msgrcv(qid, &customer, messageLenghth, normMessage, IPC_NOWAIT)) != -1)
             {
-               notifier.mtype = customer.mtype; 
+               notifier.mtype = customer.customerLeave; 
                strcpy(notifier.mtext, "customer another queue");
                msgsnd(qid, &notifier, notifierLenghth, 0);
-               kill(customer.customer_id, SIGUSR2); //wake up customer to leave queue and find another queue
+               kill(customer.customer_id, SIGUSR1); //wake up customer to leave queue and find another queue
             }
             raise(SIGKILL); 
             printf("cashier leaving  \n");
@@ -67,7 +67,7 @@ void CashierProcess(int TperItem, int qid , long normMessage, long leaveMessage,
 
 
                 if(totalIncome >= INCOME_THRESHOLD){
-                    kill(0, SIGKILL); //kills all processes in the group
+                    kill(0, SIGTERM); //kills all processes in the group
                     //TODO: do this more gracefully maybe signal to main parent to clean up shm and semaphores and queue
                 }
 
