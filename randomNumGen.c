@@ -4,7 +4,8 @@
 #include "randomNumGen.h"
 
 // Function to generate a random integer in the specified range [min, max]
-int getRandomNumber(int min, int max) {
+int getRandomNumber(int min, int max)
+{
     // Seed the random number generator with the current time
     // srand(time(NULL));
 

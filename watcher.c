@@ -10,20 +10,20 @@
 #include <time.h>
 #include <stdlib.h>
 
-
-
-void watcherProcess(int qid,struct Cashier* Cashier_arr, int cashierSem, int order, long leave, int* haveAlreadyLeft, int cashierLeftSem){
+void watcherProcess(int qid, struct Cashier *Cashier_arr, int cashierSem, int order, long leave, int *haveAlreadyLeft, int cashierLeftSem)
+{
 
     int start = INITIAL_CASHIER_BEHAVIOR;
 
-    srand(time(NULL) ^ (getpid()<<16)); //seed random number generator with pid
+    srand(time(NULL) ^ (getpid() << 16)); // seed random number generator with pid
 
     int interval = getRandomNumber(CASHIER_BEHAVIOUR_INTERVAL_LOWER, CASHIER_BEHAVIOUR_INTERVAL_UPPER);
     int decrement = getRandomNumber(CASHIER_BEHAVIOR_DECREMENT_LOWER, CASHIER_BEHAVIOR_DECREMENT_UPPER);
 
     printf("interval; %d, decrement; %d\n", interval, decrement);
 
-    while(start > 0){
+    while (start > 0)
+    {
 
         sleep(interval);
 
@@ -34,10 +34,9 @@ void watcherProcess(int qid,struct Cashier* Cashier_arr, int cashierSem, int ord
         sem_signal(cashierSem);
 
         start -= decrement;
-
     }
 
-    //cashier no longer available
+    // cashier no longer available
     sem_wait(cashierSem);
     Cashier_arr[order].cashierAvailable = 0;
     sem_signal(cashierSem);
@@ -46,8 +45,8 @@ void watcherProcess(int qid,struct Cashier* Cashier_arr, int cashierSem, int ord
 
     notifLeave.mtype = leave;
     strcpy(notifLeave.mtext, "leave");
-    
-    //notify cashier to leave
+
+    // notify cashier to leave
     msgsnd(qid, &notifLeave, sizeof(struct Notifier) - sizeof(long), 0);
 
     // increases the number of cashiers that have left
@@ -55,17 +54,17 @@ void watcherProcess(int qid,struct Cashier* Cashier_arr, int cashierSem, int ord
     *haveAlreadyLeft += 1;
     printf("cashier left %d \n", *haveAlreadyLeft);
 
-    if(*haveAlreadyLeft == CASHIER_LEFT_THRESHOLD){
+    if (*haveAlreadyLeft == CASHIER_LEFT_THRESHOLD)
+    {
 
         msgctl(qid, IPC_RMID, NULL);
 
         printf("left %d \n", 22222);
 
-        kill(0, SIGKILL); //kills all processes in the group
+        kill(0, SIGKILL); // kills all processes in the group
     }
 
     sem_signal(cashierLeftSem);
 
     raise(SIGKILL);
-
 }

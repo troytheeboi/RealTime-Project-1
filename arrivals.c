@@ -37,14 +37,14 @@ void arrivalProcess(int qid, int itemsShm, int itemsSem, int cahsiersShm, int ca
 
             int forkAcustomer = fork();
 
-            if (forkAcustomer == 0)//only customer process will enter this
+            if (forkAcustomer == 0) // only customer process will enter this
             {
                 printf("I am customer %d \n", getpid());
                 struct Cashier *Cashier_arr = (struct Cashier *)shmat(cahsiersShm, 0, 0); // Attach the shared memory segment
                 struct Item *Item_arr2 = (struct Item *)shmat(itemsShm, 0, 0);
                 int *customersLeft = (int *)shmat(customerCountShm, 0, 0); // attach to main process memory space
 
-                customerProcess(Item_arr2,itemsSem,Cashier_arr,cahsiersSem,customersLeft,customerCountSem,qid,customerLeave);
+                customerProcess(Item_arr2, itemsSem, Cashier_arr, cahsiersSem, customersLeft, customerCountSem, qid, customerLeave);
             }
         }
     }
