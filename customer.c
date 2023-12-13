@@ -70,7 +70,7 @@ void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers,
 
         if (quantity > 0)
         {
-            int willGet = getRandomNumber(1, (quantity / 10)); // how many items will get from each type no less than 1 no more than total quantity
+            int willGet = getRandomNumber(1, ((quantity / 20) + 1)); // how many items will get from each type no less than 1 no more than total quantity
 
             items[index].quantity -= willGet;          // decrease quantity
             numItems += willGet;                       // num of items in customer cart will be increased
@@ -128,8 +128,7 @@ void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers,
             printf("score at index %d: %f\n", i, highestScore);
         }
 
-        printf("highestScore: %f at index: %d \n", highestScore,indexOfHighest);
-
+        printf("highestScore: %f at index: %d \n", highestScore, indexOfHighest);
 
         cashiers[indexOfHighest].cashierQueueSize += 1; // increase apropriate values for chosen cashier
         cashiers[indexOfHighest].totalItemsInQueue += numItems;
@@ -158,6 +157,7 @@ void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers,
 
             sem_wait(customersLeftSem);
             customersLeft += 1;
+            printf("customers left %d -----------\n", *customersLeft);
             sem_signal(customersLeftSem);
 
             sem_wait(cashiersSemaphore);
