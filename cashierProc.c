@@ -71,7 +71,8 @@ void CashierProcess(int TperItem, int qid, long normMessage, long leaveMessage, 
                     printf("income weeeeeeeeeeee");
                     msgctl(qid, IPC_RMID, NULL);
 
-                    kill(0, SIGTERM); // kills all processes in the group
+                    kill(getppid(), SIGUSR1);
+
                 }
 
                 printf("cashiers semaphore in process %d \n", cahierSem);

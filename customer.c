@@ -33,7 +33,7 @@ void sigusr_handler(int signo)
     }
 }
 
-void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers, int cashiersSem, int *customersLeft, int customersLeftSem, int qid, long leavetype)
+void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers, int cashiersSem, int *customersLeft, int customersLeftSem, int qid, long leavetype,int parentMain)
 {
 
     printf("entered process customer\n");
@@ -168,7 +168,7 @@ void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers,
             if (*customersLeft == CUSTOMER_IMPATIENCE_THRESHOLD)
             {
                 msgctl(qid, IPC_RMID, NULL); // deletes queue
-                kill(0, SIGKILL);            // kills all processes in the group
+                kill(parentMain, SIGUSR1);
             }
 
             raise(SIGKILL);

@@ -44,7 +44,7 @@ void arrivalProcess(int qid, int itemsShm, int itemsSem, int cahsiersShm, int ca
                 struct Item *Item_arr2 = (struct Item *)shmat(itemsShm, 0, 0);
                 int *customersLeft = (int *)shmat(customerCountShm, 0, 0); // attach to main process memory space
 
-                customerProcess(Item_arr2, itemsSem, Cashier_arr, cahsiersSem, customersLeft, customerCountSem, qid, customerLeave);
+                customerProcess(Item_arr2, itemsSem, Cashier_arr, cahsiersSem, customersLeft, customerCountSem, qid, customerLeave,getppid());
             }
         }
     }

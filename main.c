@@ -21,24 +21,56 @@
 #include <sys/msg.h>
 #include "watcher.h"
 #include "arrivals.h"
+#include <signal.h>
 
 int mainparent; // main parent process id
 
+int itemShmid;          // items array shmdid
+int cashierShmid;       // cashiers array shmdid
+int customerCountShmid; // customers left counter
+int cashierCountShmid;  // cashiers left counter
+int customersLeftSem; // customers left semaphore
+int cashiersLeftSem; // cashiers left semaphore
+
+
+void sigusr1_handler(int signo)
+{
+    if (signo == SIGUSR1)
+    {
+
+        shmctl(itemShmid, IPC_RMID, NULL);          // remove item array shm
+        shmctl(cashierShmid, IPC_RMID, NULL);       // remove cashier array shm
+        shmctl(customerCountShmid, IPC_RMID, NULL); // remove customer count shm
+        shmctl(cashierCountShmid, IPC_RMID, NULL);  // remove cashier count shm
+
+        semctl(cashiersSemaphore, 0, IPC_RMID); // remove cashiers array semaphore
+        semctl(itemsSemaphore, 0, IPC_RMID);    // remove item array semaphore
+        semctl(customersLeftSem, 0, IPC_RMID);    // remove customer counter semaphore
+        semctl(cashiersLeftSem, 0, IPC_RMID);    // remove cashiers counter semaphore
+
+        kill(0, SIGKILL); // kills all processes in the group
+    }
+}
+
 int main(int argc, char **argv)
 {
+    if (signal(SIGUSR1, sigusr1_handler) == SIG_ERR)
+    {
+        perror("Error setting up signal handler");
+        return 1;
+    }
 
     mainparent = getpid();
 
     char *argFile = "arguments .txt";
     char *itemfile = "item.txt";
 
-    readConfigFile(argFile);                    // from fileReaders.h
-    int itemShmid = readItemsIntoShm(itemfile); // from fileReaders.h and
+    readConfigFile(argFile);                // from fileReaders.h
+    itemShmid = readItemsIntoShm(itemfile); // from fileReaders.h and
 
-    int cashierShmid = makeCahierShm_Sem(); // from cashierSm_Sem.h
+    cashierShmid = makeCahierShm_Sem(); // from cashierSm_Sem.h
 
     key_t CustomerCountKey = ftok(".", 'z'); // Generate a key for cashiers left int shm
-    int customerCountShmid;
 
     if ((customerCountShmid = shmget(CustomerCountKey, sizeof(int), IPC_CREAT | 0666)) < 0)
     { // Create a shared memory segment for cashiers left int shm
@@ -56,14 +88,13 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    int customersLeftSem = initSemaphores('n'); // init semaphore for cashiers left int shm
+    customersLeftSem = initSemaphores('n'); // init semaphore for cashiers left int shm
 
     sem_wait(customersLeftSem);   // wait for semaphore to be available
     *customersLeft = 0;           // set initial value of cashiers left to 0
     sem_signal(customersLeftSem); // release semaphore
 
     key_t cashierCountKey = ftok(".", 'o'); // Generate a key for cashiers left int shm
-    int cashierCountShmid;
 
     if ((cashierCountShmid = shmget(cashierCountKey, sizeof(int), IPC_CREAT | 0666)) < 0)
     { // Create a shared memory segment for cashiers left int shm
@@ -81,7 +112,7 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    int cashiersLeftSem = initSemaphores('l'); // init semaphore for cashiers left int shm
+    cashiersLeftSem = initSemaphores('l'); // init semaphore for cashiers left int shm
 
     sem_wait(cashiersLeftSem);   // wait for semaphore to be available
     *cashiersLeft = 0;           // set initial value of cashiers left to 0
@@ -154,7 +185,7 @@ int main(int argc, char **argv)
                 int *shmCashiersL = (int *)shmat(cashierCountShmid, 0, 0);
                 struct Cashier *Cashier_arr3 = (struct Cashier *)shmat(cashierShmid, 0, 0);
 
-                watcherProcess(qid, Cashier_arr3, cashiersSemaphore, order, leaveType, shmCashiersL, cashiersLeftSem);
+                watcherProcess(qid, Cashier_arr3, cashiersSemaphore, order, leaveType, shmCashiersL, cashiersLeftSem, mainparent);
 
                 printf("I am the watcher  => PID = %d and i = %d and my parent is %d shmid %p\n ", getpid(), order, getppid(), shmCashiersL);
             }
@@ -203,3 +234,4 @@ int main(int argc, char **argv)
 
     return 0;
 }
+

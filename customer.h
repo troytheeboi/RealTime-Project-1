@@ -14,7 +14,7 @@ extern struct Customer
     long customerLeave;
 }cus;
 
-void customerProcess(struct Item* items,int itemsSem,struct Cashier* cashiers, int cashiersSem,int* customersLeft, int customersLeftSem,int qid,long leavetype );
+void customerProcess(struct Item* items,int itemsSem,struct Cashier* cashiers, int cashiersSem,int* customersLeft, int customersLeftSem,int qid,long leavetype,int parentMain );
 
 
 #endif

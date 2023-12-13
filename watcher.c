@@ -9,8 +9,9 @@
 #include "randomNumGen.h"
 #include <time.h>
 #include <stdlib.h>
+#include "watcher.h"
 
-void watcherProcess(int qid, struct Cashier *Cashier_arr, int cashierSem, int order, long leave, int *haveAlreadyLeft, int cashierLeftSem)
+void watcherProcess(int qid, struct Cashier *Cashier_arr, int cashierSem, int order, long leave, int *haveAlreadyLeft, int cashierLeftSem,int mainparent)
 {
 
     int start = INITIAL_CASHIER_BEHAVIOR;
@@ -60,9 +61,7 @@ void watcherProcess(int qid, struct Cashier *Cashier_arr, int cashierSem, int or
 
         msgctl(qid, IPC_RMID, NULL);
 
-        printf("left %d \n", 22222);
-
-        kill(0, SIGKILL); // kills all processes in the group
+        kill(mainparent, SIGUSR1);
     }
 
     sem_signal(cashierLeftSem);
