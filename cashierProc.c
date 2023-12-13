@@ -68,7 +68,7 @@ void CashierProcess(int TperItem, int qid, long normMessage, long leaveMessage, 
 
                 if (totalIncome >= INCOME_THRESHOLD)
                 {
-
+                    printf("income weeeeeeeeeeee");
                     msgctl(qid, IPC_RMID, NULL);
 
                     kill(0, SIGTERM); // kills all processes in the group
