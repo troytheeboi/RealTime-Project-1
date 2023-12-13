@@ -125,7 +125,7 @@ void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers,
                     indexOfHighest = i;
                 }
             }
-            printf("score at index %d: %f\n", i, highestScore);
+            // printf("score at index %d: %f\n", i, highestScore);
         }
 
         printf("highestScore: %f at index: %d \n", highestScore, indexOfHighest);
@@ -139,7 +139,7 @@ void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers,
 
         sem_signal(cashiersSem);
 
-        printf("score for pid: %d is %f \n", chosen.cashierId, score);
+        // printf("score for pid: %d is %f \n", chosen.cashierId, score);
 
         customer.mtype = chosen.messsageType; // send a message of message type accepted by chosen cashier
 
@@ -156,7 +156,7 @@ void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers,
             done = 1;
 
             sem_wait(customersLeftSem);
-            customersLeft += 1;
+            *customersLeft += 1;
             printf("customers left %d -----------\n", *customersLeft);
             sem_signal(customersLeftSem);
 
