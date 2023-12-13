@@ -131,14 +131,14 @@ int main(int argc, char **argv)
 
             struct Cashier *Cashier_arr2 = (struct Cashier *)shmat(cashierShmid, 0, 0); // Attach the shared memory segment to cashier process's address space
 
-            Cashier_arr2[order].cashierId = getpid();
-            Cashier_arr2[order].cashierQueueSize = 0;
-            Cashier_arr2[order].timePerItem = scanTime;
-            Cashier_arr2[order].behavior = INITIAL_CASHIER_BEHAVIOR;
-            Cashier_arr2[order].totalItemsInQueue = 0;
-            Cashier_arr2[order].cashierAvailable = 1;
+            Cashier_arr2[i].cashierId = getpid();
+            Cashier_arr2[i].cashierQueueSize = 0;
+            Cashier_arr2[i].timePerItem = scanTime;
+            Cashier_arr2[i].behavior = INITIAL_CASHIER_BEHAVIOR;
+            Cashier_arr2[i].totalItemsInQueue = 0;
+            Cashier_arr2[i].cashierAvailable = 1;
 
-            Cashier_arr2[order].messsageType = cashierType;
+            Cashier_arr2[i].messsageType = cashierType;
 
             int pid2 = fork();
 

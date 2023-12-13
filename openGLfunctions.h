@@ -11,7 +11,7 @@ extern int circleRadius;
 
 void drawItems(void);
 void drawWhiteRectangle(void);
-void drawCashier(int cashier,int index,int queueSize, int itemsCount);
+void drawCashier(int cashier, int index, int queueSize, int itemsCount,int behavior, int tpi);
 void display(void);
 void reshape(int w, int h);
 

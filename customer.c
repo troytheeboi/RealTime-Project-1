@@ -70,7 +70,7 @@ void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers,
 
         if (quantity > 0)
         {
-            int willGet = getRandomNumber(1, (quantity/10)); // how many items will get from each type no less than 1 no more than total quantity
+            int willGet = getRandomNumber(1, (quantity / 10)); // how many items will get from each type no less than 1 no more than total quantity
 
             items[index].quantity -= willGet;          // decrease quantity
             numItems += willGet;                       // num of items in customer cart will be increased
@@ -88,6 +88,10 @@ void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers,
     customer.numOfItems = numItems;
     customer.customerLeave = leavetype;
 
+    int shoppingTime = getRandomNumber(CUSTOMER_SHOPPING_TIME_LOWER, CUSTOMER_SHOPPING_TIME_UPPER);
+
+    sleep(shoppingTime);
+
     int done = 0;
     int toLeave;
     int remaining = CUSTOMER_WAITING_INLINE_TIME; // to ensure that the total of time spent in any number of queues doesn't exceed CUSTOMER_WAITING_INLINE_TIME
@@ -95,9 +99,9 @@ void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers,
     while (done == 0)
     { // this loop is so a customer could go to another queue
 
-        int highestScore = 0;
+        float highestScore = 0;
         int indexOfHighest;
-        int score;
+        float score;
 
         sem_wait(cashiersSem);
 
@@ -106,29 +110,39 @@ void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers,
 
             if (cashiers[i].cashierAvailable == 1)
             {
-
-                score = cashiers[i].behavior / (cashiers[i].timePerItem * ((cashiers[i].cashierQueueSize * cashiers[i].totalItemsInQueue) + 1)); // score = behaviour/itemsInQueue*customersInQueue*timePerItem*cashiers[i].
-                                                                                                                                                 // we add one to denominator to avoid zero values in initial cashier queue
-                if (score >= highestScore)
+                if (cashiers[i].cashierQueueSize == 0 || cashiers[i].totalItemsInQueue == 0)
+                {
+                    score = (float)cashiers[i].behavior / cashiers[i].timePerItem;
+                }
+                else
+                {
+                    score = (float)cashiers[i].behavior / (cashiers[i].timePerItem * cashiers[i].cashierQueueSize * cashiers[i].totalItemsInQueue);
+                }
+                // score = behaviour/itemsInQueue*customersInQueue*timePerItem*cashiers[i].
+                if (score > highestScore)
                 {
                     highestScore = score;
                     indexOfHighest = i;
                 }
             }
+            printf("score at index %d: %f\n", i, highestScore);
         }
+
+        printf("highestScore: %f at index: %d \n", highestScore,indexOfHighest);
+
 
         cashiers[indexOfHighest].cashierQueueSize += 1; // increase apropriate values for chosen cashier
         cashiers[indexOfHighest].totalItemsInQueue += numItems;
 
         struct Cashier chosen = cashiers[indexOfHighest];
 
-        printf("Cash chosen %ld", chosen.messsageType);
+        printf("Cash chosen %ld \n", chosen.messsageType);
 
         sem_signal(cashiersSem);
 
-        customer.mtype = chosen.messsageType; // send a message of message type accepted by chosen cashier
+        printf("score for pid: %d is %f \n", chosen.cashierId, score);
 
-        printf("will send to %ld cashier", chosen.messsageType);
+        customer.mtype = chosen.messsageType; // send a message of message type accepted by chosen cashier
 
         if (msgsnd(qid, &customer, sizeof(struct Customer) - sizeof(long), 0) == -1) // send message
         {

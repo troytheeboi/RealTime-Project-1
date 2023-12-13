@@ -6,8 +6,7 @@
 #include "openGLfunctions.h"
 #include "cashierSm_Sem.h"
 
-int windowWidth = 800;
-int windowHeight1 = 600;
+int windowWidth = 1800;
 int windowHeight = 800;
 int triangleWidth = 100;
 int triangleHeight = 100;
@@ -17,12 +16,12 @@ int circleRadius = 50;
 void drawItems()
 {
     glColor3f(0.0, 0.0, 0.0);             // Set color to black for text
-    glRasterPos2f(10, windowHeight - 10); // Initial position for the first item
+    glRasterPos2f(10, windowHeight + 50); // Initial position for the first item
 
     // List of items and their prices
     sem_wait(itemsSemaphore);
     // Draw items and their prices in the same row with a bold-like effect
-    for (int i = 0; i < itemCount; ++i)
+    for (int i = 1; i <= itemCount; ++i)
     {
         char itemString[60]; // Assuming a reasonable length for the item string
 
@@ -31,7 +30,7 @@ void drawItems()
 
         // Scale the text to achieve a larger font size
         glPushMatrix();
-        glScalef(1.5, 1.5, 1.0); // Adjust the scaling factor as needed
+        // glScalef(1.5, 1.5, 1.0); // Adjust the scaling factor as needed
 
         // Draw the text with scaled size
         glutBitmapString(GLUT_BITMAP_HELVETICA_12, (const unsigned char *)itemString);
@@ -39,7 +38,7 @@ void drawItems()
         glPopMatrix();
 
         // Move to the next position
-        glRasterPos2f(10 + (i + 1) * 80, windowHeight - 10);
+        glRasterPos2f((i) * 95, windowHeight + 50);
     }
     sem_signal(itemsSemaphore);
 }
@@ -48,10 +47,10 @@ void drawWhiteRectangle()
 {
     glBegin(GL_QUADS);
     glColor3f(1.0, 1.0, 1.0); // Set color to white
+    glVertex2f(0.0, windowHeight + 100);
     glVertex2f(0.0, windowHeight);
-    glVertex2f(0.0, windowHeight - 80.0);
-    glVertex2f(windowWidth, windowHeight - 80.0);
-    glVertex2f(windowWidth, windowHeight);
+    glVertex2f(windowWidth + 100, windowHeight);
+    glVertex2f(windowWidth + 100, windowHeight + 100);
     glEnd();
 }
 
@@ -129,14 +128,12 @@ void drawString(const char *str)
     }
 }
 
-void drawCashier(int cashier, int index, int queueSize, int itemsCount)
+void drawCashier(int cashier, int index, int queueSize, int itemsCount,int behavior, int tpi)
 {
 
     const float margin = 70.0;
-    const float triangleMargin = 20.0;
     const float squareWidth = 150;  // Margin value
     const float lineLength = 700.0; // Length of the vertical lines
-    const float lineWidth = 2.0;    // Width of the vertical lines
 
     const float triangleSpacing = 90.0;
 
@@ -145,8 +142,8 @@ void drawCashier(int cashier, int index, int queueSize, int itemsCount)
     glColor3f(0.5, 0.5, 0.5);                               // Set color to white
     glVertex2f(margin, windowHeight - 100.0);               // Bottom-right vertex of the square
     glVertex2f(margin + squareWidth, windowHeight - 100.0); // Bottom-right vertex of the square
-    glVertex2f(margin + squareWidth, windowHeight);         // Top-right vertex of the square
-    glVertex2f(margin, windowHeight);                       // Top-right vertex of the square
+    glVertex2f(margin + squareWidth, windowHeight - 20);    // Top-right vertex of the square
+    glVertex2f(margin, windowHeight - 20);                  // Top-right vertex of the square
     glEnd();
 
     // add the cashier information.
@@ -155,15 +152,27 @@ void drawCashier(int cashier, int index, int queueSize, int itemsCount)
     char itemString[50];
     // Format the item and price string
     sprintf(itemString, "Cashier id: %d", cashier);
-    glRasterPos2f(80, windowHeight - 20);
-    drawString(itemString);
-
-    sprintf(itemString, "Queue Size: %d", queueSize);
     glRasterPos2f(80, windowHeight - 40);
     drawString(itemString);
-    sprintf(itemString, "Total Items Count: %d", itemsCount);
+    sprintf(itemString, "Queue Size: %d", queueSize);
     glRasterPos2f(80, windowHeight - 60);
     drawString(itemString);
+    sprintf(itemString, "Total Items Count: %d", itemsCount);
+    glRasterPos2f(80, windowHeight - 80);
+
+    float score;
+
+    if (queueSize == 0 || itemsCount == 0)
+    {
+        score = (float) behavior / tpi;
+    }
+    else
+    {
+        score = (float)behavior / (tpi* queueSize* itemsCount);
+    }
+    sprintf(itemString, "Score: %f", score);
+    glRasterPos2f(80, windowHeight - 80);
+
     // Scale the text to achieve a larger font size
     glPushMatrix();
     // glScalef(3.0, 1.0, 1.0); // Adjust the scaling factor as needed
@@ -181,11 +190,11 @@ void drawCashier(int cashier, int index, int queueSize, int itemsCount)
     glColor3f(1.0, 1.0, 1.0); // Set color to white
     // First vertical line
     glVertex2f(margin - 20, windowHeight - 70);
-    glVertex2f(margin - 20, windowHeight - 100.0 - lineLength);
+    glVertex2f(margin - 20, windowHeight - 200.0 - lineLength);
 
     // Second vertical line
     glVertex2f(margin + squareWidth + 20, windowHeight - 70);
-    glVertex2f(margin + squareWidth + 20, windowHeight - 100.0 - lineLength);
+    glVertex2f(margin + squareWidth + 20, windowHeight - 200.0 - lineLength);
     glEnd();
 
     // Draw the triangles using a for loop
@@ -205,7 +214,6 @@ void drawCashier(int cashier, int index, int queueSize, int itemsCount)
 void display()
 {
 
-    const int CashierNumber = 10;
     const float padding = 20.0; // Adjust the padding as needed
 
     glClear(GL_COLOR_BUFFER_BIT);
@@ -214,11 +222,11 @@ void display()
 
     float initialX = 20.0;                // Adjust the initial X coordinate as needed
     glColor3f(0.0, 0.0, 0.0);             // Set color to black for text
-    glRasterPos2f(10, windowHeight - 10); // Initial position for the first item
+    glRasterPos2f(10, windowHeight - 20); // Initial position for the first item
 
     sem_wait(cashiersSemaphore);
 
-    for (int i = 0; i < CashierNumber; i++)
+    for (int i = 0; i < NUM_CASHIERS; i++)
     {
 
         if (Cashier_arr[i].cashierAvailable == 1)
@@ -226,7 +234,7 @@ void display()
 
             glPushMatrix();                                                                                              // Save the current matrix
             glTranslatef(initialX, 0.0, 0.0);                                                                            // Translate to the current position
-            drawCashier(Cashier_arr[i].cashierId, i, Cashier_arr[i].cashierQueueSize, Cashier_arr[i].totalItemsInQueue); // Assuming you want to pass the cashier ID (i + 1)
+            drawCashier(Cashier_arr[i].cashierId, i, Cashier_arr[i].cashierQueueSize, Cashier_arr[i].totalItemsInQueue,Cashier_arr[i].behavior,Cashier_arr[i].timePerItem); // Assuming you want to pass the cashier ID (i + 1)
             glPopMatrix();                                                                                               // Restore the original matrix
             initialX += padding + 150.0;                                                                                 // Adjust the padding and cashier width as needed
         }
