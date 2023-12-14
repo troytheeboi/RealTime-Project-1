@@ -80,7 +80,7 @@ void CashierProcess(int TperItem, int qid, long normMessage, long leaveMessage, 
                 sem_wait(cahierSem); // wait for semaphore to be available
 
                 Cashier_arr[order].totalItemsInQueue -= customer.numOfItems; // decrease total items in queue
-                printf("total items in queue %d \n", Cashier_arr[order].totalItemsInQueue);
+                printf("total items in queue for %d are %d \n", order,Cashier_arr[order].totalItemsInQueue);
                 Cashier_arr[order].cashierQueueSize--; // decrease queue size
 
                 sem_signal(cahierSem); // signal semaphore is available
