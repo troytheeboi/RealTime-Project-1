@@ -160,12 +160,7 @@ void customerProcess(struct Item *items, int itemsSem, struct Cashier *cashiers,
             printf("customers left %d -----------\n", *customersLeft);
             sem_signal(customersLeftSem);
 
-            sem_wait(cashiersSemaphore);
-            cashiers[indexOfHighest].cashierQueueSize -= 1;
-            cashiers[indexOfHighest].totalItemsInQueue -= numItems;
-            sem_signal(cashiersSemaphore);
-
-            if (*customersLeft == CUSTOMER_IMPATIENCE_THRESHOLD)
+            if (*customersLeft == CUSTOMER_LEFT_THRESHOLD)
             {
                 msgctl(qid, IPC_RMID, NULL); // deletes queue
                 kill(parentMain, SIGUSR1);
